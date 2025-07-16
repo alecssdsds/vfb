@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Verificator Bilete ATA</title>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 1rem;
+      background-color: #f9f9f9;
+      margin: 0;
+    }
+    #reader {
+      margin: 0 auto 1rem;
+      max-width: 400px;
+      width: 100%;
+    }
+    #result {
+      font-size: 1.25rem;
+      padding: 1rem;
+      border-radius: 8px;
+      max-width: 400px;
+      margin: 0 auto;
+      background-color: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .valid {
+      color: green;
+      font-weight: bold;
+    }
+    .invalid {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Verificator Bilete SailFest 2025</h1>
+  <div id="reader"></div>
+  <div id="result">Scanează codul QR al biletului.</div>
+
+  <script>
+    // Lista completă de semnături valide (ultimele 5 caractere din coduri)
+    const semnaturiValide = [
+      "37558","D0943","CBD30","2E902","B3273","B7FCE","1BF0E","6E89C","23278","6CA0C",
+      "2495D","911D3","CC3EF","EA1F4","7A1C7","3FCA5","C308A","ADD16","7BFCA","83A4D",
+      "234FC","D427A","45E12","A4360","C8927","2082F","7C35D","6EDAC","4D699","3F535",
+      "B1215","03674","E1282","ABF1D","D9738","C3FD9","66F1E","B52D3","8A3B1","809DA",
+      "84B8D","EA501","E5EB6","6CFBF","948D7","A035D","F8B5B","208BE","0C161","5D49B",
+      "0FF48","C525D","3FA14","CEBBA","E89CE","B29CA","5FF22","2B70C","11026","94E83",
+      "82254","66743","33C90","EE934","74A50","1ABE0","0D6A2","99013","65DC4","EB2D7",
+      "D5C21","BF683","D6B25","A7DF3","D67FB","3DF15","33431","FFC37","88C89","21722",
+      "88E3C","5B90F","88C4F","30FF4","909A4","BABBD","37C0E","08B6A","87236","104B9",
+      "F0AAE","56B86","9FE88","EF8F4","A9D81","2581E","7CB9E","66465","A4C35","C1FFD",
+      "271B3","B533E","F53CC","A23D3","DB00D","B6877","F3C55","4E54C","58BF3","744F6",
+      "74D85","8ED4E","D9052","01A49","A8A45","F843B","7564B","9CC63","3FA86","00E08"
+    ];
+
+    const resultElem = document.getElementById("result");
+
+    function extrageSemnatura(codComplet) {
+      // Cod complet e ceva de genul "VS2025-003-CBD30"
+      // Extragem ultimele 5 caractere (semnătura)
+      return codComplet.trim().slice(-5).toUpperCase();
+    }
+
+    function onScanSuccess(decodedText, decodedResult) {
+      const semnatura = extrageSemnatura(decodedText);
+      if (semnaturiValide.includes(semnatura)) {
+        resultElem.innerHTML = `✅ Cod VALID: <span class="valid">${semnatura}</span>`;
+      } else {
+        resultElem.innerHTML = `❌ Cod INVALID: <span class="invalid">${semnatura}</span>`;
+      }
+    }
+
+    function onScanError(errorMessage) {
+      // Optional: poți afisa erori de scanare aici
+      // console.warn(`Scan error: ${errorMessage}`);
+    }
+
+    // Pornim scanarea cu camera spate, 10fps, box 250px
+    const html5QrCode = new Html5Qrcode("reader");
+    html5QrCode.start(
+      { facingMode: "environment" },
+      {
+        fps: 10,
+        qrbox: 250
+      },
+      onScanSuccess,
+      onScanError
+    ).catch(err => {
+      resultElem.innerHTML = "⚠️ Nu s-a putut accesa camera.";
+      console.error(err);
+    });
+  </script>
+
+</body>
+</html>
